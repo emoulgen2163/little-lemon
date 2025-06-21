@@ -29,9 +29,8 @@ interface MenuDao {
     @Insert
     fun insertAll(vararg menuItem: MenuItem)
 
-
-    @Delete
-    fun deleteMenuItem(menuItem: MenuItem)
+    @Query("SELECT (SELECT COUNT(*) FROM MenuItem) == 0")
+    fun isEmpty(): Boolean
 }
 
 @Database(entities = [MenuItem::class], version = 1)

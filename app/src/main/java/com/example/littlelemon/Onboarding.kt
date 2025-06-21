@@ -1,6 +1,7 @@
 package com.example.littlelemon
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,13 +60,17 @@ fun OnBoarding(navController: NavController){
         mutableStateOf("")
     }
 
+
+
     fun validation(){
 
         if(firstName.isBlank() || lastName.isBlank() || email.isBlank()){
             Toast.makeText(context, "Registration unsuccessful. Please enter all data.", Toast.LENGTH_SHORT).show()
         } else{
-            val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-            with(sharedPref.edit()) {
+            val sharedPreferences by lazy {
+                context.getSharedPreferences("LittleLemon", Context.MODE_PRIVATE)
+            }
+            with(sharedPreferences.edit()) {
                 putString("first_name", firstName)
                 putString("last_name", lastName)
                 putString("user_email", email)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,10 +30,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -46,6 +51,8 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
 import kotlin.text.category
 
@@ -84,58 +91,17 @@ class MainActivity : ComponentActivity() {
             LittleLemonTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
 
-                    MyNavigation()
-
-                    val databaseMenuItems = database.menuDao().getAll().observeAsState(emptyList()).value
-
-
-
-                    var orderMenuItems by remember {
-                        mutableStateOf(false)
-                    }
-
-                    val menuItems = if(orderMenuItems){
-                        databaseMenuItems.sortedBy {
-                            it.title
-                        }
-                    } else {
-                        databaseMenuItems
-                    }
-
-                    var searchPhrase by remember {
-                        mutableStateOf("")
-                    }
-
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 50.dp, end = 50.dp),
-                        onValueChange = {
-                            searchPhrase = it
-                        },
-                        label = { Text("Enter search phrase") },
-                        value = searchPhrase,
-                        leadingIcon = { Icon( imageVector = Icons.Default.Search, contentDescription = null) }
-                    )
-
-                    if(searchPhrase.isNotEmpty()){
-                        menuItems.filter {
-                            it.title.contains(searchPhrase, ignoreCase = true)
-                        }
-                    }
-
-                    val categories = menuItems.map { it.category }.distinct()
-
-                    fun filterMenuItemsByCategory(category: String): List<MenuItem> {
-                        return menuItems.filter { it.category == category }
-                    }
-
-                    val filteredItems = filterMenuItemsByCategory(categories.toString())
-
-
-                    MenuItems(filteredItems)
+                    val navController = rememberNavController()
+                    MyNavigation(navController = navController, context = this)
 
                 }
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (database.menuDao().isEmpty()) {
+                fetchMenu()
+                saveMenuToDatabase(fetchMenu())
             }
         }
     }
@@ -144,7 +110,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun MenuItems(item: List<MenuItem>) {
+internal fun MenuItems(item: List<MenuItem>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
@@ -154,29 +120,44 @@ private fun MenuItems(item: List<MenuItem>) {
             items = item,
             itemContent = { menuItem ->
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-
-                        Text(menuItem.title)
-                        Text(menuItem.description, color = Color(0xFFAFAFAF))
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
                         Text(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(5.dp),
+                            text = menuItem.title,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily(Font(R.font.karla_regular))
+                        )
+                        Text(
+                            text = menuItem.description,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.karla_regular))
+                        )
+                        Text(
+                            text = "$%.2f".format(menuItem.price),
                             textAlign = TextAlign.Right,
-                            text = "%.2f".format(menuItem.price),
-                            color = Color(0xFF71807B)
+                            color = Color(0xFFAFAFAF),
+                            modifier = Modifier.padding(top = 4.dp),
+                            fontFamily = FontFamily(Font(R.font.karla_regular))
                         )
                     }
 
                     GlideImage(
                         model = menuItem.image,
                         contentDescription = menuItem.title,
-                        modifier = Modifier.width(100.dp).height(100.dp).padding(start = 8.dp)
+                        modifier = Modifier
+                            .size(100.dp) // square thumbnail
+                            .padding(start = 8.dp)
                     )
                 }
+
             }
         )
     }
