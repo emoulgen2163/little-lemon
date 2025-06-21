@@ -3,6 +3,8 @@ package com.example.littlelemon
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
@@ -47,7 +50,7 @@ fun Profile(navController: NavController){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            modifier = Modifier.width(226.dp).height(56.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp),
             alignment = Alignment.Center,
             contentDescription = null,
             painter = painterResource(R.drawable.logo)
@@ -56,55 +59,38 @@ fun Profile(navController: NavController){
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
             text = "Personal Information",
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = Color(0xFF333333)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().border(1.dp, Color.Black, RoundedCornerShape(8.dp)).padding(8.dp),
             text = "First Name: $firstName",
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().height(0.dp),
-            value = firstName,
-            onValueChange = {}
-        )
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().border(1.dp, Color.Black, RoundedCornerShape(8.dp)).padding(8.dp),
             text = "Last Name: $lastName",
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().height(0.dp),
-            value = lastName,
-            onValueChange = {}
-        )
 
-        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().border(1.dp, Color.Black, RoundedCornerShape(8.dp)).padding(8.dp),
             text = "Email: $email",
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().height(0.dp),
-            value = email,
-            onValueChange = {}
-        )
 
         Spacer(modifier = Modifier.height(48.dp))
 
@@ -116,7 +102,7 @@ fun Profile(navController: NavController){
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(8.dp)
         ) {
             Text(text = "Log Out", color = Color.Black)
         }

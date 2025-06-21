@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,12 +27,16 @@ import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,15 +47,15 @@ import androidx.navigation.compose.rememberNavController
 fun OnBoarding(navController: NavController){
     val context = LocalContext.current
 
-    val firstName by remember {
+    var firstName by remember {
         mutableStateOf("")
     }
 
-    val lastName by remember {
+    var lastName by remember {
         mutableStateOf("")
     }
 
-    val email by remember {
+    var email by remember {
         mutableStateOf("")
     }
 
@@ -109,21 +114,28 @@ fun OnBoarding(navController: NavController){
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = firstName,
-            onValueChange = {},
-            label = { Text("First Name") })
+            onValueChange = {firstName = it},
+            label = { Text("First Name") },
+            singleLine = true)
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = lastName,
-            onValueChange = {},
-            label = { Text("Last Name") }
+            onValueChange = {lastName = it},
+            label = { Text("Last Name") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = email,
-            onValueChange = {},
-            label = { Text("Email") }
+            onValueChange = {email = it},
+            label = { Text("Email") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Done
+            )
         )
         Spacer(modifier = Modifier.height(48.dp))
 
@@ -137,7 +149,7 @@ fun OnBoarding(navController: NavController){
                 .height(48.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text(text = "Register", color = Color.Black)
+            Text(text = "Register", color = Color.Black, fontWeight = FontWeight.Medium)
         }
     }
 
